@@ -38,40 +38,34 @@ const MORSE_TABLE = {
 };
 
 function decode(expr) {
-let i ;
-let j ;
-let bumper = '' ;
-let str = '' ;
-let from_11 = false ;
-   
-    for (i = 0; i < expr.length; i += 10) {
-        if (expr[i] == '*') {
-            str = str + ' ' ;
+    let i = 0;
+    let result = '';
+    while(i < expr.length / 10) {
+        if (expr[i * 10 + 1] === '*') {
+            result += ' ';
+            i++;
+            continue;
         }
-          else {
-            for ( j = i; j < (i + 10); j++ ) {
-                if (from_11) {
-                    if (expr[j] == '1') {
-                        bumper = bumper + '-' ;
-                    }
-                    else {
-                        bumper = bumper + '.' ;
-                    }
-                    from_11 = false ;
-                }
-                else {
-                    if (expr[j] == '1') {
-                        from_11 = true ;
-                    }
-                }
-            }
-            str = str + MORSE_TABLE[bumper] ;
-            bumper = '' ;
-        }
-        
-    } return str ;
+        const encodedLetterString = expr.substring(i * 10, 10 + (i * 10));
+        const lastIndex = encodedLetterString.indexOf('1');
+        const pureString = encodedLetterString.substring(lastIndex);
+        let decodedLetter = '';
 
+        for (let i = 0; i < pureString.length / 2; i++) {
+            const currentSymbol = pureString[i * 2] + pureString[i * 2 + 1];
+            if (currentSymbol === '11') {
+                decodedLetter += '-';
+            }
+            if (currentSymbol === '10') {
+                decodedLetter += '.';
+            }
+        }
+        result += MORSE_TABLE[decodedLetter];
+        i++;
+    }
+    return result;
 }
+
 module.exports = {
     decode
 }
